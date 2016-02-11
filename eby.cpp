@@ -30,17 +30,6 @@ struct environment
     }
 };
 
-struct jump_instruction //conditional jump in the form J A X Y meaning if tape[DP]==A goto X else goto Y
-{
-    byte A;
-    infinite X;
-    infinite Y;
-
-    jump_instruction(byte A, infinite X, infinite Y) : A(A), X(X), Y(Y)
-    {
-    }
-};
-
 //prototypes
 void read_file(environment &env, char *filename);
 void interpret(environment &env);
