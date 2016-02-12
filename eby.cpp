@@ -39,6 +39,9 @@ void interpret(environment &env);
 void read_jump(environment &env);
 void print_byte(byte b);
 
+//global variables
+int wimpmode(0);
+
 int main(int argc, char** argv)
 {
 
@@ -114,6 +117,13 @@ void read_file(environment &env, char *filename){
     env.tape.insert(env.tape.begin(),
                std::istream_iterator<byte>(file),
                std::istream_iterator<byte>());
+
+    string s(env.tape.begin(),env.tape.begin()+8);
+    if (s=="wimpmode"){
+        cout << "EXPORT GRADE ENABLED!";
+        wimpmode = 1;
+    }
+
 }
 
 void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else goto Y. Example: Jkb+1011*b-1* means if tape[DP]=='k' goto DP+11 else goto DP-1. The format is as follows: b or h signifies binary or hex. + or - signifies positive or negative. Followed by the number in binary or hex. Followed by a * to indicate the number has ended. 
