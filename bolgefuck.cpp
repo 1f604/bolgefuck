@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     environment env = environment(); //creates env on the stack. Since the elements of a vector are stored on the heap, growing the tape doesn't use more stack space.  
 
     if ( argc < 2 ) {
-        cerr << "Usage: " << argv[0] << " <file_name>" << std::endl;
+        cerr << "Usage: " << argv[0] << " <file_name>" << endl;
         exit(1);
     }
 
@@ -95,9 +95,13 @@ void cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //currentl
     try {
         X = stoll(m[2], NULL, base);  
         Y = stoll(m[3], NULL, base);  
+        if (llabs(X) > TAPE_MAX_SIZE || llabs(Y) > TAPE_MAX_SIZE){
+            cerr << "Error: Tried to jump more distance than max tape length\n";
+            exit(1);
+        }
     }
     catch (const out_of_range& oor) {
-        cerr << "Error: Jump parameters larger than max value of long long" << '\n';
+        cerr << "Error: Jump parameters larger than max value of long long\n";
         exit(1);
     }
 }
@@ -108,27 +112,27 @@ void cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //currentl
  */
 void read_file(environment &env, char *filename){
 
-    std::ifstream file = std::ifstream(filename, std::ios::binary);
+    ifstream file = ifstream(filename, ios::binary);
 
     if(!file.is_open())
     {
-        std::cerr << "File not found : " << filename << std::endl;
+        cerr << "File not found : " << filename << endl;
         exit(1);
     }
 
     cout << "vector size is: "<<env.tape.capacity()<<endl;
     /** first read in the file */
     // Stop eating new lines in binary mode!!!
-    file.unsetf(std::ios::skipws);
+    file.unsetf(ios::skipws);
     // get its size:
-    std::streampos fileSize;
-    file.seekg(0, std::ios::end);
+    streampos fileSize;
+    file.seekg(0, ios::end);
     fileSize = file.tellg();
-    file.seekg(0, std::ios::beg);
+    file.seekg(0, ios::beg);
     // read the data:
     env.tape.insert(env.tape.begin(),
-               std::istream_iterator<byte>(file),
-               std::istream_iterator<byte>());
+               istream_iterator<byte>(file),
+               istream_iterator<byte>());
 
 
 }
@@ -147,7 +151,7 @@ void encrypt(environment &env){
 void interpret(environment &env)
 {
     for (tape_t::iterator i = env.tape.begin(); i != env.tape.end(); ++i)
-    std::cout << *i << ' ';
+    cout << *i << ' ';
 
     env.CP = 0;
     cout << "the 1st char is:" << env.tape[env.CP]<<endl;
@@ -159,6 +163,8 @@ void interpret(environment &env)
         wimpmode = 1;
         env.CP+=8;
         env.DP+=8;
+    cout << "the 1st CP char is:" << env.tape[env.CP]<<endl;
+    cout << "the 1st DP char is:" << env.tape[env.DP]<<endl;
     }
     
     while( true )
@@ -166,26 +172,32 @@ void interpret(environment &env)
         if (!wimpmode){
             encrypt(env);
         }
+
+
+        if(env.DP >= TAPE_MAX_SIZE || env.CP >= TAPE_MAX_SIZE) { //if pointers are too big, terminate
+            cout << "Reached tape limit";
+            exit(1);
+        }
+        /** Lowest value for a pointer is 0 */
+        if(env.DP < 0){
+            env.DP = 0;
+        }
+        if(env.CP < 0){
+            env.CP = 0;
+        }
+        while(env.CP >= env.tape.size()-2 || env.DP >= env.tape.size()-2) { //if pointers are greater than current allocated tape size-2, expand tape until they aren't. 
+            env.tape.push_back(BLANK_SYMBOL);
+        }
+
         switch(env.tape[env.CP])
         {
         /** Single character instructions */ 
         case '>':
-            if(env.DP >= TAPE_MAX_SIZE) {
-                std::cout << "DP reached tape limit";
-                exit(1);
-            }
-            if(env.DP == env.tape.size()) {
-                env.tape.push_back(BLANK_SYMBOL);
-            }
-            else{
-                env.DP++;
-            }
+            env.DP++;
             env.CP++;
             break;
         case '<':
-            if(env.DP != 0){
-                env.DP--;
-            }
+            env.DP--;
             env.CP++;
             break;
         case 'p':
@@ -200,18 +212,20 @@ void interpret(environment &env)
             cout << endl; //flush the buffer when program finishes. 
             exit(0);
         /** Double character instructions */ 
-        case 's':
-            if (env.CP+1 == env.tape.size()){
-                env.tape[env.DP] = BLANK_SYMBOL;
-            }
-            else{
-                env.tape[env.DP] = env.tape[env.CP+1];
-            }
+        case 's': 
+            env.tape[env.DP] = env.tape[env.CP+1]; //shouldn't be a problem since we ensured that the tape is always 2 cells bigger than the pointer value. 
             env.CP+=2;
             break;
         /** Variable length instructions */ 
         case 'J': 
             read_jump(env);
+            break;
+        default:
+            if(wimpmode){
+                cerr << "Invalid instruction: "; print_byte(env.tape[env.CP]); cerr << endl;
+                exit(1);
+            }
+            encrypt(env);
             break;
         }
     }
