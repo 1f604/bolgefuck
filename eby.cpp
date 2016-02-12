@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <vector>
+#include <string>
 #include <iterator>
 #include <sstream>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <ctype.h>
+#include <regex>
 using namespace std;
 #define TAPE_INITIAL_SIZE 300
 #define TAPE_MAX_SIZE 30000 //According to the spec this should be infinite, but we live in the real world. Please note vector size may be over double this number depending on C++ compiler implementation
@@ -31,6 +33,7 @@ struct environment
 };
 
 //prototypes
+infinite cba2n(environment &env, infinite &p); //convert byte array to number
 void read_file(environment &env, char *filename);
 void interpret(environment &env);
 void read_jump(environment &env);
@@ -58,10 +61,26 @@ int main(int argc, char** argv)
  */
 void print_byte(byte b)
 {
-    if(isprint(b))
-        std::cout << b;
-    else
-        std::cout << "0x" << std::hex << (int)b << std::dec;
+    (isprint(b)) ? cout << b : cout << "0x" << hex << (int)b << dec;
+}
+
+/*
+ * Converts a byte array to numbers. 
+ */
+infinite cba2n(environment &env, infinite &p){ //increment p to the start of Y
+    if (env.tape[p] != 'b' && env.tape[p] != 'h'){ //the only number formats accepted are binary and hex. 
+        (isprint(env.tape[p])) ? cerr << "Invalid number format: " << env.tape[p] << endl : cerr << "Invalid number format: " << "0x" << hex << (int)env.tape[p] << dec << endl;
+        exit(1);
+    } 
+
+    //now that we know it's a number, we'll match to the end of the tape to find the end of the number
+    string s(env.tape.begin()+p,env.tape.end());
+    regex numregex((env.tape[p] == 'b') ? "b[+-][01]+[*]" : "h[+-][01234567890abcdefABCDEF]+[*]" , regex_constants::ECMAScript | regex_constants::icase);
+    if (regex_search(s, numregex)){
+        cout << "Correct number found\n";
+    } 
+    exit(0);
+    return 5;
 }
 
 /*
@@ -93,21 +112,18 @@ void read_file(environment &env, char *filename){
                std::istream_iterator<byte>());
 }
 
-
 void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else goto Y. Example: Jkb+1011*b-1* means if tape[DP]=='k' goto DP+11 else goto DP-1. The format is as follows: b or h signifies binary or hex. + or - signifies positive or negative. Followed by the number in binary or hex. Followed by a * to indicate the number has ended. 
 
-    infinite X = 4;
-    infinite Y = -1;
+    infinite X, Y;
+    infinite p = env.CP + 2;
+    X = cba2n(env, p);
+    Y = cba2n(env, p);
     
     env.CP += (env.tape[env.DP] == env.tape[env.CP+1]) ? X : Y;
 }
 
-
 void interpret(environment &env)
 {
-
-
-    /** now start interpreting */
     for (tape_t::iterator i = env.tape.begin(); i != env.tape.end(); ++i)
     std::cout << *i << ' ';
 
