@@ -70,9 +70,9 @@ void print_byte(byte b)
     (isprint(b)) ? cout << b : cout << "0x" << hex << (int)b << dec;
 }
 /*
- * Converts 2 byte arrays to 2 numbers
+ * Converts 2 byte arrays to 2 numbers. I use regex and stoll here because I want to keep the code short and readable even though I could code my own finite state machine and implement my own version of atoi. 
  */
-infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //increment p to the start of Y
+infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //currently using stoll which is limited to size of long long, future implementations should remove this limitation. 
     if (env.tape[p] != 'b' && env.tape[p] != 'h'){ //the only number formats accepted are binary and hex. 
         (isprint(env.tape[p])) ? cerr << "Invalid number format: " << env.tape[p] << endl : cerr << "Invalid number format: " << "0x" << hex << (int)env.tape[p] << dec << endl;
         exit(1);
@@ -89,16 +89,16 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //incre
     for (int i =1;i<m.size();i++){
         cout<<m[i]<<endl;
     }
-    //ok so now we have the encoding in m[1] (b or h), followed by X and Y in strings (+/- strings of binary or hex characters). 
 
     int base = (m[1] == 'b') ? 2 : 16;
 
     try {
-        X = stol(m[2], NULL, base);
-        Y = stol(m[3], NULL, base);  
+        X = stoll(m[2], NULL, base);  
+        Y = stoll(m[3], NULL, base);  
     }
-    catch (const std::out_of_range& oor) {
-        std::cerr << "Out of Range error: " << oor.what() << '\n';
+    catch (const out_of_range& oor) {
+        cerr << "Error: Jump parameters larger than max value of long long" << '\n';
+        exit(1);
     }
 
     cout << X << '\n'<< Y <<endl;
