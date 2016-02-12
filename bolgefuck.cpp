@@ -145,7 +145,7 @@ void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else got
 }
 
 void encrypt(environment &env){
-
+    
 }
 
 void interpret(environment &env)
@@ -173,7 +173,6 @@ void interpret(environment &env)
             encrypt(env);
         }
 
-
         if(env.DP >= TAPE_MAX_SIZE || env.CP >= TAPE_MAX_SIZE) { //if pointers are too big, terminate
             cout << "Reached tape limit";
             exit(1);
@@ -185,7 +184,7 @@ void interpret(environment &env)
         if(env.CP < 0){
             env.CP = 0;
         }
-        while(env.CP >= env.tape.size()-2 || env.DP >= env.tape.size()-2) { //if pointers are greater than current allocated tape size-2, expand tape until they aren't. 
+        while(env.CP >= env.tape.size()-2 || env.DP >= env.tape.size()-2) { //if pointers are greater than current allocated tape size-2, expand tape until they aren't. vector.size() is constant time so it's fine here. 
             env.tape.push_back(BLANK_SYMBOL);
         }
 
