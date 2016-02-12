@@ -45,9 +45,6 @@ int wimpmode(0);
 
 int main(int argc, char** argv)
 {
-
-    cout << "Minimum value of infinity: " << numeric_limits<infinite>::min() << endl;
-    cout << "Maximum value of infinity: " << numeric_limits<infinite>::max() << endl;
     environment env = environment(); //creates env on the stack. Since the elements of a vector are stored on the heap, growing the tape doesn't use more stack space.  
 
     if ( argc < 2 ) {
@@ -86,9 +83,6 @@ void cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //currentl
         cerr << "Incorrect J syntax" << endl;
         exit(1);
     }
-    for (int i =1;i<m.size();i++){
-        cout<<m[i]<<endl;
-    }
 
     int base = (m[1] == 'b') ? 2 : 16;
 
@@ -120,7 +114,7 @@ void read_file(environment &env, char *filename){
         exit(1);
     }
 
-    cout << "vector size is: "<<env.tape.capacity()<<endl;
+    cout << "Maximum tape size is: "<<TAPE_MAX_SIZE<<endl;
     /** first read in the file */
     // Stop eating new lines in binary mode!!!
     file.unsetf(ios::skipws);
@@ -145,26 +139,17 @@ void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else got
 }
 
 void encrypt(environment &env){
-    
+
 }
 
 void interpret(environment &env)
 {
-    for (tape_t::iterator i = env.tape.begin(); i != env.tape.end(); ++i)
-    cout << *i << ' ';
-
-    env.CP = 0;
-    cout << "the 1st char is:" << env.tape[env.CP]<<endl;
-    cout << "vector size is: "<<env.tape.capacity()<<endl;
-
     string s(env.tape.begin(),env.tape.begin()+8);
     if (s=="wimpmode"){
         cout << "EXPORT GRADE ENABLED!\n";
         wimpmode = 1;
         env.CP+=8;
         env.DP+=8;
-    cout << "the 1st CP char is:" << env.tape[env.CP]<<endl;
-    cout << "the 1st DP char is:" << env.tape[env.DP]<<endl;
     }
     
     while( true )
