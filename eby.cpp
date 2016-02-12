@@ -80,7 +80,7 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //curr
 
     //now that we know it's a number, we'll match to the end of the tape to find the end of the number
     string s(env.tape.begin()+p,env.tape.end());
-    regex r((env.tape[p] == 'b') ? "(b)([+-][01]+)[*]([+-][01]+)[*]" : "(h)([+-][0123456789abcdefABCDEF]+)[*]([+-][0123456789abcdefABCDEF]+)[*]" , regex_constants::ECMAScript | regex_constants::icase);
+    regex r((env.tape[p] == 'b') ? "(b)([+-][01]+)[*]([+-][01]+)[*]" : "(h)([+-][0-9a-fA-F]+)[*]([+-][0-9a-fA-F]+)[*]" , regex_constants::ECMAScript | regex_constants::icase);
     smatch m;
     if (!regex_search(s, m, r)){
         cerr << "Incorrect J syntax" << endl;
