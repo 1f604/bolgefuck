@@ -37,6 +37,7 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y); //conve
 void read_file(environment &env, char *filename);
 void interpret(environment &env);
 void read_jump(environment &env);
+void encrypt(environment &env);
 void print_byte(byte b);
 
 //global variables
@@ -118,11 +119,6 @@ void read_file(environment &env, char *filename){
                std::istream_iterator<byte>(file),
                std::istream_iterator<byte>());
 
-    string s(env.tape.begin(),env.tape.begin()+8);
-    if (s=="wimpmode"){
-        cout << "EXPORT GRADE ENABLED!";
-        wimpmode = 1;
-    }
 
 }
 
@@ -133,6 +129,10 @@ void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else got
     env.CP += (env.tape[env.DP] == env.tape[env.CP+1]) ? X : Y;
 }
 
+void encrypt(environment &env){
+    
+}
+
 void interpret(environment &env)
 {
     for (tape_t::iterator i = env.tape.begin(); i != env.tape.end(); ++i)
@@ -141,9 +141,21 @@ void interpret(environment &env)
     env.CP = 0;
     cout << "the 1st char is:" << env.tape[env.CP]<<endl;
     cout << "vector size is: "<<env.tape.capacity()<<endl;
+
+
+    string s(env.tape.begin(),env.tape.begin()+8);
+    if (s=="wimpmode"){
+        cout << "EXPORT GRADE ENABLED!\n";
+        wimpmode = 1;
+        env.CP+=8;
+        env.DP+=8;
+    }
     
     while( true )
-    {
+    {   
+        if (!wimpmode){
+            encrypt(env);
+        }
         switch(env.tape[env.CP])
         {
         /** Single character instructions */ 
