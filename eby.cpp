@@ -33,7 +33,7 @@ struct environment
 };
 
 //prototypes
-infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y); //convert byte array to number, can be zero pre-padded as much as you want
+void cba2n(environment &env, infinite &p, infinite &X, infinite &Y); //convert byte array to number, can be zero pre-padded as much as you want
 void read_file(environment &env, char *filename);
 void interpret(environment &env);
 void read_jump(environment &env);
@@ -72,7 +72,7 @@ void print_byte(byte b)
 /*
  * Converts 2 byte arrays to 2 numbers. I use regex and stoll here because I want to keep the code short and readable even though I could code my own finite state machine and implement my own version of atoi. 
  */
-infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //currently using stoll which is limited to size of long long, future implementations should remove this limitation. 
+void cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //currently using stoll which is limited to size of long long, future implementations should remove this limitation. 
     if (env.tape[p] != 'b' && env.tape[p] != 'h'){ //the only number formats accepted are binary and hex. 
         (isprint(env.tape[p])) ? cerr << "Invalid number format: " << env.tape[p] << endl : cerr << "Invalid number format: " << "0x" << hex << (int)env.tape[p] << dec << endl;
         exit(1);
@@ -100,13 +100,6 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){  //curr
         cerr << "Error: Jump parameters larger than max value of long long" << '\n';
         exit(1);
     }
-
-    cout << X << '\n'<< Y <<endl;
-
-
-
-    exit(0);
-    return 5;
 }
 
 /*
