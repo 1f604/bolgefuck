@@ -33,7 +33,7 @@ struct environment
 };
 
 //prototypes
-infinite cba2n(environment &env, infinite &p); //convert byte array to number
+infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y); //convert byte array to number
 void read_file(environment &env, char *filename);
 void interpret(environment &env);
 void read_jump(environment &env);
@@ -67,7 +67,7 @@ void print_byte(byte b)
 /*
  * Converts a byte array to numbers. 
  */
-infinite cba2n(environment &env, infinite &p){ //increment p to the start of Y
+infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //increment p to the start of Y
     if (env.tape[p] != 'b' && env.tape[p] != 'h'){ //the only number formats accepted are binary and hex. 
         (isprint(env.tape[p])) ? cerr << "Invalid number format: " << env.tape[p] << endl : cerr << "Invalid number format: " << "0x" << hex << (int)env.tape[p] << dec << endl;
         exit(1);
@@ -75,10 +75,14 @@ infinite cba2n(environment &env, infinite &p){ //increment p to the start of Y
 
     //now that we know it's a number, we'll match to the end of the tape to find the end of the number
     string s(env.tape.begin()+p,env.tape.end());
-    regex numregex((env.tape[p] == 'b') ? "b[+-][01]+[*]" : "h[+-][01234567890abcdefABCDEF]+[*]" , regex_constants::ECMAScript | regex_constants::icase);
+    regex numregex((env.tape[p] == 'b') ? "b[+-][01]+[*][+-][01]+[*]" : "h[+-][01234567890abcdefABCDEF]+[*][+-][01234567890abcdefABCDEF]+[*]" , regex_constants::ECMAScript | regex_constants::icase);
     if (regex_search(s, numregex)){
         cout << "Correct number found\n";
     } 
+    else{
+
+        cout << "Correct number not found\n";
+    }
     exit(0);
     return 5;
 }
@@ -113,12 +117,9 @@ void read_file(environment &env, char *filename){
 }
 
 void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else goto Y. Example: Jkb+1011*b-1* means if tape[DP]=='k' goto DP+11 else goto DP-1. The format is as follows: b or h signifies binary or hex. + or - signifies positive or negative. Followed by the number in binary or hex. Followed by a * to indicate the number has ended. 
-
     infinite X, Y;
     infinite p = env.CP + 2;
-    X = cba2n(env, p);
-    Y = cba2n(env, p);
-    
+    cba2n(env, p, X, Y);
     env.CP += (env.tape[env.DP] == env.tape[env.CP+1]) ? X : Y;
 }
 
