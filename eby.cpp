@@ -15,7 +15,7 @@ using namespace std;
 
 //typedefs
 typedef uint8_t byte;
-typedef size_t infinite;
+typedef int_fast64_t infinite; //large signed value
 typedef vector<byte> tape_t; //use a vector so we don't have to manually resize the tape. 
 
 
@@ -33,7 +33,7 @@ struct environment
 };
 
 //prototypes
-infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y); //convert byte array to number
+infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y); //convert byte array to number, can be zero pre-padded as much as you want
 void read_file(environment &env, char *filename);
 void interpret(environment &env);
 void read_jump(environment &env);
@@ -46,10 +46,12 @@ int wimpmode(0);
 int main(int argc, char** argv)
 {
 
+    cout << "Minimum value of infinity: " << numeric_limits<infinite>::min() << endl;
+    cout << "Maximum value of infinity: " << numeric_limits<infinite>::max() << endl;
     environment env = environment(); //creates env on the stack. Since the elements of a vector are stored on the heap, growing the tape doesn't use more stack space.  
 
     if ( argc < 2 ) {
-        std::cerr << "Usage: " << argv[0] << " <file_name>" << std::endl;
+        cerr << "Usage: " << argv[0] << " <file_name>" << std::endl;
         exit(1);
     }
 
@@ -67,9 +69,8 @@ void print_byte(byte b)
 {
     (isprint(b)) ? cout << b : cout << "0x" << hex << (int)b << dec;
 }
-
 /*
- * Converts a byte array to numbers. 
+ * Converts 2 byte arrays to 2 numbers
  */
 infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //increment p to the start of Y
     if (env.tape[p] != 'b' && env.tape[p] != 'h'){ //the only number formats accepted are binary and hex. 
@@ -79,7 +80,7 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //incre
 
     //now that we know it's a number, we'll match to the end of the tape to find the end of the number
     string s(env.tape.begin()+p,env.tape.end());
-    regex r((env.tape[p] == 'b') ? "(b)([+-][01]+)[*]([+-][01]+)[*]" : "(h)([+-][01234567890abcdefABCDEF]+)[*]([+-][01234567890abcdefABCDEF]+)[*]" , regex_constants::ECMAScript | regex_constants::icase);
+    regex r((env.tape[p] == 'b') ? "(b)([+-][01]+)[*]([+-][01]+)[*]" : "(h)([+-][0123456789abcdefABCDEF]+)[*]([+-][0123456789abcdefABCDEF]+)[*]" , regex_constants::ECMAScript | regex_constants::icase);
     smatch m;
     if (!regex_search(s, m, r)){
         cerr << "Incorrect J syntax" << endl;
@@ -88,6 +89,22 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //incre
     for (int i =1;i<m.size();i++){
         cout<<m[i]<<endl;
     }
+    //ok so now we have the encoding in m[1] (b or h), followed by X and Y in strings (+/- strings of binary or hex characters). 
+
+    int base = (m[1] == 'b') ? 2 : 16;
+
+    try {
+        X = stol(m[2], NULL, base);
+        Y = stol(m[3], NULL, base);  
+    }
+    catch (const std::out_of_range& oor) {
+        std::cerr << "Out of Range error: " << oor.what() << '\n';
+    }
+
+    cout << X << '\n'<< Y <<endl;
+
+
+
     exit(0);
     return 5;
 }
