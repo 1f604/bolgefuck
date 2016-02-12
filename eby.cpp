@@ -79,13 +79,14 @@ infinite cba2n(environment &env, infinite &p, infinite &X, infinite &Y){ //incre
 
     //now that we know it's a number, we'll match to the end of the tape to find the end of the number
     string s(env.tape.begin()+p,env.tape.end());
-    regex numregex((env.tape[p] == 'b') ? "b[+-][01]+[*][+-][01]+[*]" : "h[+-][01234567890abcdefABCDEF]+[*][+-][01234567890abcdefABCDEF]+[*]" , regex_constants::ECMAScript | regex_constants::icase);
-    if (regex_search(s, numregex)){
-        cout << "Correct number found\n";
-    } 
-    else{
-
-        cout << "Correct number not found\n";
+    regex r((env.tape[p] == 'b') ? "(b)([+-][01]+)[*]([+-][01]+)[*]" : "(h)([+-][01234567890abcdefABCDEF]+)[*]([+-][01234567890abcdefABCDEF]+)[*]" , regex_constants::ECMAScript | regex_constants::icase);
+    smatch m;
+    if (!regex_search(s, m, r)){
+        cerr << "Incorrect J syntax" << endl;
+        exit(1);
+    }
+    for (int i =1;i<m.size();i++){
+        cout<<m[i]<<endl;
     }
     exit(0);
     return 5;
@@ -130,7 +131,7 @@ void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else got
 }
 
 void encrypt(environment &env){
-    
+
 }
 
 void interpret(environment &env)
@@ -141,7 +142,6 @@ void interpret(environment &env)
     env.CP = 0;
     cout << "the 1st char is:" << env.tape[env.CP]<<endl;
     cout << "vector size is: "<<env.tape.capacity()<<endl;
-
 
     string s(env.tape.begin(),env.tape.begin()+8);
     if (s=="wimpmode"){
