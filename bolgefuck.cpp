@@ -202,7 +202,7 @@ void interpret(environment &env)
         if(env.CP < 0){
             env.CP = 0;
         }
-        while(env.CP >= env.tape.size()-2 || env.DP >= env.tape.size()-2) { 
+        while(env.CP >= env.tape.size()-8 || env.DP >= env.tape.size()-8) { 
             env.tape.push_back(BLANK_SYMBOL);
         }
 
