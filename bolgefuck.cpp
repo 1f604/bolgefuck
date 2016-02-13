@@ -64,7 +64,12 @@ int main(int argc, char** argv)
  */
 void print_byte(byte b)
 {
-    (isprint(b)) ? cout << b : cout << "0x" << hex << (int)b << dec;
+    if (b=='\n'){
+        cout << '\n';
+    }
+    else{
+        (isprint(b)) ? cout << b : cout << "0x" << hex << (int)b << dec;
+    }
 }
 /*
  * Converts 2 byte arrays to 2 numbers. I use regex and stoll here because I want to keep the code short and readable even though I could code my own finite state machine and implement my own version of atoi. 
@@ -189,7 +194,7 @@ void interpret(environment &env)
             env.CP++;
             break;
         case 'i':
-            env.tape[env.DP] = cin.get();
+            env.tape[env.DP] = cin.get(); //unfortunately this requires the user to press enter after typing in input. A limitation enforced by lack of standardization among shells. 
             env.CP++;
             break;
         case 'H':
