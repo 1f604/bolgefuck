@@ -1,6 +1,6 @@
 # BOLGEFUCK SPECIFICATION
 
-##### Memories
+##### Memory
 
 1. Tape: An unbounded array of bytes indexed from 0 to infinity, each cell initialized to 0. All code and data are stored here. 
 2. Cryptor: An unbounded array of bytes indexed from 0 to infinity, each cell initialized to 0. Used for obfuscation purposes only. 
