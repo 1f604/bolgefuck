@@ -54,7 +54,7 @@ The encryption routine makes a string out of the contents of the tape up to the 
 
 ### Miscellaneous trivia
 
-My implementation uses long long (64 byte signed integer) types. This implementation is present throughout the code. Other languages that use unbounded integer types may be more suited for implementation of the specification. Also note a lot of things in the code depend on the TAPE_MAX_SIZE constant. Be sure to keep this constant much lower than your system memory since various functions in the code (especially the encryption function) can use a lot more memory than constant suggests. I used regex and stoll for cba2n because I wanted to keep the code short and readable, though I could code my own finite state machine and atoi. 
+My implementation uses long long (64 bit signed integer) types. This implementation is present throughout the code. Other languages that use unbounded integer types may be more suited for implementation of the specification. Also note a lot of things in the code depend on the TAPE_MAX_SIZE constant. Be sure to keep this constant much lower than your system memory since various functions in the code (especially the encryption function) can use a lot more memory than constant suggests. I used regex and stoll for cba2n because I wanted to keep the code short and readable, though I could code my own finite state machine and atoi. 
 
 The idea of the cryptor is to prevent cycles, since with each hash the cryptor will be changed. This is clear in the specification but since the size of cryptor is limited in the implementation there will still be cycles (though whether if these cycles would have practical impact on the obfuscation I don't know). 
 
