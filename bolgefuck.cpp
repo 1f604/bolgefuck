@@ -8,6 +8,7 @@
 #include <fstream>
 #include <ctype.h>
 #include <regex>
+#include "sha256.h"
 using namespace std;
 #define TAPE_INITIAL_SIZE 300
 #define TAPE_MAX_SIZE 30000 //According to the spec this should be infinite, but we live in the real world. Please note vector size may be over double this number depending on C++ compiler implementation
@@ -25,10 +26,15 @@ struct environment
     tape_t tape;
     infinite CP; //we use index notation instead of iterators for ease of reading, even though iterators are "more" container independent. 
     infinite DP;
+    infinite EP; 
+    string cryptor;
 
     environment() : tape(TAPE_INITIAL_SIZE)
     {
-        CP = DP = 0;
+        CP = DP = EP = 0;
+        cryptor = "no tricks up my sleeve :^)";
+        string s(TAPE_MAX_SIZE, 'a');
+        cryptor.append(s);
     }
 };
 
@@ -143,8 +149,18 @@ void read_jump(environment &env){ //J a X Y means if tape[DP]==a goto X else got
     env.CP += (env.tape[env.DP] == env.tape[env.CP+1]) ? X : Y;
 }
 
-void encrypt(environment &env){
-
+void encrypt(environment &env){ //the idea of the cryptor is to prevent cycles, since with each hash the cryptor will be changed. 
+    string s(env.tape.begin(),env.tape.end()); 
+    s.append(env.cryptor);
+    char hash = sha256(s);
+    env.EP++;
+    if (env.EP == env.cryptor.size()){ 
+        env.EP = 0;
+    }
+    env.cryptor[env.EP] = hash;
+    s.append(env.cryptor); //potentially huge memory usage right here...
+    hash = sha256(s);
+    env.tape[env.CP] = hash;
 }
 
 void interpret(environment &env)
@@ -159,12 +175,13 @@ void interpret(environment &env)
     
     while( true )
     {   
+
         if (!wimpmode){
             encrypt(env);
         }
 
         if(env.DP >= TAPE_MAX_SIZE || env.CP >= TAPE_MAX_SIZE) { //if pointers are too big, terminate
-            cout << "Reached tape limit";
+            cerr << "Reached tape limit"<<endl;
             exit(1);
         }
         /** Lowest value for a pointer is 0 */
