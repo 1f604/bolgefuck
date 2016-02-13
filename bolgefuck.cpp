@@ -46,13 +46,13 @@
 #include "sha256.h"
 using namespace std;
 #define TAPE_INITIAL_SIZE 300
-#define TAPE_MAX_SIZE 30000 
+#define TAPE_MAX_SIZE 30000  //According to the spec this should be infinite, but we live in the real world. Please note vector size may be over double this number depending on C++ compiler implementation
 #define BLANK_SYMBOL 0
 
 //typedefs
 typedef uint8_t byte;
-typedef int_fast64_t infinite; 
-typedef vector<byte> tape_t; 
+typedef int_fast64_t infinite; //real world. 
+typedef vector<byte> tape_t; //use a vector so we don't have to manually resize the tape. 
 
 //structs
 struct environment
@@ -67,7 +67,7 @@ struct environment
     {
         CP = DP = EP = 0;
         cryptor = "no tricks up my sleeve :^)";
-        string s(TAPE_MAX_SIZE, 'a');
+        string s(TAPE_MAX_SIZE, '\0');
         cryptor.append(s);
     }
 };
@@ -191,10 +191,7 @@ void interpret(environment &env)
     while( true )
     {   
 
-        if (!wimpmode){
-            encrypt(env);
-        }
-
+        /* bookkeeping */
         if(env.DP >= TAPE_MAX_SIZE || env.CP >= TAPE_MAX_SIZE) { 
             cerr << "Reached tape limit"<<endl;
             exit(1);
@@ -207,6 +204,11 @@ void interpret(environment &env)
         }
         while(env.CP >= env.tape.size()-2 || env.DP >= env.tape.size()-2) { 
             env.tape.push_back(BLANK_SYMBOL);
+        }
+
+        /* encryption */
+        if (!wimpmode){
+            encrypt(env);
         }
 
         switch(env.tape[env.CP])
