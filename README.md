@@ -62,7 +62,7 @@ You may have to press enter after typing in input. You can change this by changi
 
 You may have noticed that all of the programs provided as examples use wimpmode. This is because I have no idea how to write programs that work without turning wimpmode on. Please tell me if you manage to write a hello world program without using wimpmode. 
 
-##### Boring facts
+##### Random remarks
 
 This language is mostly based on brainfuck. In fact most of the operators are directly copied from it. The major difference is the use of a parametered jump rather than brackets. This was intended to save one instruction but also to make the wimpmode easier to use. I spent a good 10-40 hours on this, mostly reading about other esolanguages (brainfuck, malbolge and bitbitjump), turing completeness, learning C++ (I've never programmed in C++ before, a fact you may deduce from reading the source code), writing and debugging my own programs in bolgefuck, and of course designing and implementing the language itself. 
 
