@@ -1,3 +1,17 @@
+# Building
+
+      make
+
+That's right, all you have to do is cd into the directory which contains the makefile and type make. 
+
+# How to use
+
+      ./bf program
+
+If you would like to pipe some input from stdin into your program:
+
+      echo 111111-11= | ./bf sub
+
 # BOLGEFUCK SPECIFICATION
 
 ##### Memory
@@ -37,20 +51,6 @@
 
 The encryption routine makes a string out of the contents of the tape up to the furthest point ever reached by either CP or DP, and then appends the contents of cryptor (also up to the furthest point reached by EP) to that string. A SHA256 hash is computed for this string, and then a byte of the resulting hash is returned, the location of that byte in the hash is the sum of the hash % 32. EP is then incremented and the returned byte is written to Cryptor[EP]. The new Cryptor is appended to the string that was hashed, the string is hashed and the byte returned by the hash is used to overwrite the byte at tape[CP]. 
 
-
-## Building
-
-      make
-
-That's right, all you have to do is cd into the directory which contains the makefile and type make. 
-
-## How to use
-
-      ./bf program
-
-If you would like to pipe some input from stdin into your program:
-
-      echo 111111-11= | ./bf sub
 
 ### Miscellaneous trivia
 
