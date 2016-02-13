@@ -151,7 +151,7 @@ void SHA256::final(unsigned char *digest)
     }
 }
  
-char sha256(std::string input)
+char sha256(std::string input) //Note this function is different from the original! Do not use this function if you want a sha256 hash! 
 {
     unsigned char digest[SHA256::DIGEST_SIZE];
     memset(digest,0,SHA256::DIGEST_SIZE);

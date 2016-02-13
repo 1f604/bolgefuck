@@ -1,13 +1,12 @@
 /*
- * Based on Olivier Gay's version
- * See Modified BSD License below: 
+ * Bolgefuck implementation by 1f604 (Since I also wrote the bolgefuck spec, this can be thought of as the "official" bolgefuck interpreter). 
+ * Date published: 13 February 2016
+ * https://github.com/1f604/bolgefuck
  *
- * FIPS 180-2 SHA-224/256/384/512 implementation
- * Issue date:  04/30/2005
- * http://www.ouah.org/ogay/sha2/
- *
- * Copyright (C) 2005, 2007 Olivier Gay <olivier.gay@a3.epfl.ch>
- * All rights reserved.
+ * Based on migimunz's brainfuck interpreter (2011): https://gist.github.com/migimunz/964338 
+ * Also uses jww's code for reading a binary file into a vector (2014): http://stackoverflow.com/a/21802936
+ * See sha256.cpp for license on the sha256 code. 
+ * The following files are entirely my own work: examples, in, sub
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -61,7 +60,7 @@ typedef vector<byte> tape_t; //use a vector so we don't have to manually resize 
 struct environment
 {
     tape_t tape;
-    infinite CP; //we use index notation instead of iterators for ease of reading, even though iterators are "more" container independent. 
+    infinite CP; //we use index notation instead of iterators for ease of reading, even though iterators are more container independent. 
     infinite DP;
     infinite EP; 
     string cryptor;
