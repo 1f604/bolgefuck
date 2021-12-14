@@ -41,13 +41,13 @@ If you would like to pipe some input from stdin into your program:
 
 ##### Instructions
 
-1. H means terminate execution. 
-2. > means increment DP. Increment CP. 
-3. < means decrement DP. Increment CP. 
-4. i means get 1 byte from stdin and write it to tape[DP]. Increment CP. 
-5. p means print byte at tape[DP]. Increment CP. 
-6. s means write tape[CP+1] to tape[DP]. Increment CP by 2. 
-7. J a X Y means if tape[DP]==a CP += X else CP += Y. Example: `Jkb+1011*-1*` means if tape[DP]=='k' CP+=11 else CP--. The format is as follows: b or h signifies binary or hex. + or - signifies positive or negative. Followed by the number in binary or hex. Both numbers must be in the same format (binary or hex). Each number is followed by a * to indicate the number has ended. 
+1. `H` means terminate execution. 
+2. `>` means increment DP. Increment CP. 
+3. `<` means decrement DP. Increment CP. 
+4. `i` means get 1 byte from stdin and write it to tape[DP]. Increment CP. 
+5. `p` means print byte at tape[DP]. Increment CP. 
+6. `s` means write tape[CP+1] to tape[DP]. Increment CP by 2. 
+7. `J a X Y` means if tape[DP]==a CP += X else CP += Y. Example: `Jkb+1011*-1*` means if tape[DP]=='k' CP+=11 else CP--. The format is as follows: b or h signifies binary or hex. + or - signifies positive or negative. Followed by the number in binary or hex. Both numbers must be in the same format (binary or hex). Each number is followed by a * to indicate the number has ended. 
 
 The encryption routine makes a string out of the contents of the tape up to the furthest point ever reached by either CP or DP, and then appends the contents of cryptor (also up to the furthest point reached by EP) to that string. A SHA256 hash is computed for this string, and then a byte of the resulting hash is returned, the location of that byte in the hash is the sum of the hash % 32. EP is then incremented and the returned byte is written to Cryptor[EP]. The new Cryptor is appended to the string that was hashed, the string is hashed and the byte returned by the hash is used to overwrite the byte at tape[CP]. 
 
